@@ -1,0 +1,211 @@
+%%%%%%%%%%%%Testing program for Lidar Tracker%%%%%%%%%%%%%%%%%%%%%
+%%%This file simulates the tracking system under different situations and
+%%%It configures the system and outputs stream,frame detection and
+%%%different success matrices
+
+%%%Real Location files for validation%%%
+realData_2ballsRoom_file = "C:\Users\DanK\Desktop\2BallsRoomRealData.xlsx";
+realData_1ballField_file = "C:\Users\DanK\Desktop\1BallOpenFieldReal.xlsx";
+
+realData_1ballField = readmatrix(realData_1ballField_file);
+realData_2ballsRoom = readmatrix(realData_2ballsRoom_file);
+
+%%%Lidar Input Data files%%%
+data_file = "C:\Users\DanK\Desktop\פרויקט גמר\Recordings\14.3.23\14.3 csv\2balls_dyn_res_n.csv";
+
+%data_file = "C:\Users\DanK\Desktop\פרויקט גמר\Recordings\3.4.23\csv\1_ball_open_field.csv";
+%data_file = "C:\Users\DanK\Desktop\פרויקט גמר\Recordings\3.4.23\csv\2_ball_open_field_2.csv";
+%data_file = "C:\Users\DanK\Desktop\פרויקט גמר\Recordings\3.4.23\csv\2_ball_open_field1.csv";
+
+%data_file = "C:\Users\DanK\Desktop\פרויקט גמר\Recordings\3.4.23\csv\ball_wall.csv";
+%data_file = "C:\Users\DanK\Desktop\פרויקט גמר\Recordings\3.4.23\csv\2_ball_wall.csv";
+%data_file = "C:\Users\DanK\Desktop\פרויקט גמר\Recordings\3.4.23\csv\ball_wall_disapear_depth.csv";
+
+
+%%%%Simulations: in this section the system will be simulated with
+%%%%different data and configurations
+
+simType = 4;%flag that indicates what kind of simulation will be executed
+
+switch simType
+    case 1 %Simulate 1 ball open field and plot location
+        %configure the tracking system
+        config.kalman_filter = 3;
+        config.meas = 2;
+        config.frame_time = 0.1;
+        config.object_radius = 0.1;
+
+        config.frame_points = 24000;
+        config.ROI_flag = 1 ;
+        config.video_flag = 0;
+        [verif,frame_stream,frame_num] = LidarTrackerV1(data_file,config);
+
+        % create figure and three subplots
+        calculated_data1 = verif1.estimations(:,1:3);
+        calculated_data2 = verif2.estimations(:,1:3);
+        calculated_data3 = verif3.estimations(:,1:3);
+
+        figure
+        title("Object detection")
+        subplot(3, 1, 1)
+        hold on
+        title('Location in X')
+        xlabel('Frame number sps = 2' )
+        ylabel('Position (m)')
+        plot(1:20, realData_1ballField(:, 1), 'b', 'DisplayName', 'Real location')
+        plot(1:20, calculated_data2(5:5:100, 1), 'r', 'DisplayName', 'Calculated location')
+        legend
+
+        subplot(3, 1, 2)
+        hold on
+        title('Location in Y')
+        xlabel('Frame number sps = 2')
+        ylabel('Position (m)')
+        plot(1:20, realData_1ballField(:, 2), 'b', 'DisplayName', 'Real location')
+        plot(1:20, calculated_data2(5:5:100, 2), 'r', 'DisplayName', 'Calculated location')
+        legend
+
+        subplot(3, 1, 3)
+        hold on
+        title('Location in Z')
+        xlabel('Frame number sps = 2')
+        ylabel('Position (m)')
+        plot(1:20, realData_1ballField(:, 3), 'b', 'DisplayName', 'Real location')
+        plot(1:20, calculated_data2(5:5:100, 3), 'r', 'DisplayName', 'Calculated location')
+        legend
+
+
+    case 2%Simulate 1 ball open field with different EKF and compare
+        %%%Simulation1: Matlab Kalman filter constant velocity
+        %configure the tracking system
+        config.kalman_filter = 3;
+        config.meas = 2;
+        config.frame_time = 0.1;
+        config.object_radius = 0.1;
+
+        config.frame_points = 24000;
+        config.ROI_flag = 1 ;
+        config.video_flag = 0;
+        [verif1,frame_stream1,frame_num1] = LidarTrackerV1(data_file,config);
+
+        %%%Simulation2: Matlab Kalman filter constant accelaration
+        %configure the tracking system
+        config.kalman_filter = 4;
+        config.meas = 2;
+        config.frame_time = 0.1;
+        config.object_radius = 0.1;
+
+        config.frame_points = 24000;
+        config.ROI_flag = 1 ;
+        config.video_flag = 0;
+        [verif2,frame_stream2,frame_num2] = LidarTrackerV1(data_file,config);
+
+        %%%Simulation3: EKF filter constant velocity
+        config.kalman_filter = 1;
+        config.meas = 2;
+        config.frame_time = 0.1;
+        config.object_radius = 0.1;
+
+        config.frame_points = 24000;
+        config.ROI_flag = 1 ;
+        config.video_flag = 0;
+        [verif3,frame_stream3,frame_num3] = LidarTrackerV1(data_file,config);
+        %%%Compare tracking to real data%%%
+
+
+        %%%%%Compare convergence of different simulations
+
+        %Calculate and plot the difference between tracker and real data
+        % calculate Euclidean distance between real and calculated locations for
+        % each simulation
+
+        dist1 = sqrt((realData_1ballField(:,1) - calculated_data1(5:5:100,1)).^2 + ...
+            (realData_1ballField(:,2) - calculated_data1(5:5:100,2)).^2 + ...
+            (realData_1ballField(:,3) - calculated_data1(5:5:100,3)).^2 );
+
+        dist2 = sqrt((realData_1ballField(:,1) - calculated_data2(5:5:100,1)).^2 + ...
+            (realData_1ballField(:,2) - calculated_data2(5:5:100,2)).^2 + ...
+            (realData_1ballField(:,3) - calculated_data2(5:5:100,3)).^2 );
+
+        dist3 = sqrt((realData_1ballField(:,1) - calculated_data3(5:5:100,1)).^2 + ...
+            (realData_1ballField(:,2) - calculated_data3(5:5:100,2)).^2 + ...
+            (realData_1ballField(:,3) - calculated_data3(5:5:100,3)).^2 );
+        % calculate mean and standard deviation of distances
+        mean_dist1 = mean(dist1);
+        std_dist1 = std(dist1);
+
+        mean_dist2 = mean(dist2);
+        std_dist2 = std(dist2);
+
+        mean_dist3 = mean(dist3);
+        std_dist3 = std(dist3);
+
+
+        % plot distance as a function of frame number
+        figure
+        hold
+        plot(1:20, dist1, 'r', 'LineWidth', 2)
+        plot(1:20, dist2, 'g', 'LineWidth', 2)
+        plot(1:20, dist3, 'b', 'LineWidth', 2)
+        title('Euclidean distance between real and calculated locations')
+        xlabel('Frame number sps = 2')
+        ylabel('Distance (m)')
+
+        % add text box displaying mean and standard deviation for all methods
+        %annotation('textbox', [.2 .7 .1 .1], 'String', {sprintf('Method 1:\nMean: %.4f m\nStandard Deviation: %.4f m', mean_dist1, std_dist1), sprintf('Method 2:\nMean: %.4f m\nStandard Deviation: %.4f m', mean_dist2, std_dist2)}, 'FitBoxToText', 'on','Draggable', 'on')
+
+        % add legend
+        legend('constant velocity', 'constant accelaration', 'EKF')
+
+    case 3 %Simulate and display frame detection
+        %configure the tracking system
+        config.kalman_filter = 4;
+        config.meas = 2;
+        config.frame_time = 0.1;
+        config.object_radius = 0.1;
+
+        config.frame_points = 24000;
+        config.ROI_flag = 1 ;
+        config.video_flag = 0;
+        [verif,frame_stream,frame_num] = LidarTrackerV1(data_file,config);
+
+        for j = 10:10:100
+            frame_j = frame_stream3{j+1};
+            if config.ROI_flag == 1
+                frame_j = getROI(frame_j,config.ROI_flag,5,0,3,-3);
+            end
+            fit_box(frame_j,verif3.estimations(j,1:3),0.5,j,config.video_flag);
+        end
+
+    case 4 %Simulate and Create frame detection stream
+        %configure the tracking system
+        config.kalman_filter = 4;
+        config.meas = 2;
+        config.frame_time = 0.1;
+        config.object_radius = 0.1;
+
+        config.frame_points = 24000;
+        config.ROI_flag = 1 ;
+        config.video_flag = 1;
+        [verif,frame_stream,frame_num] = LidarTrackerV1(data_file,config);
+
+        %%Create video
+        for j = 1:1:100
+            frame_j = frame_stream2{j+1};
+            if config.ROI_flag == 1
+                frame_j = getROI(frame_j,config.ROI_flag,5,0,3,-3);
+            end
+            fit_box(frame_j,verif2.estimations(j,1:3),0.5,j,1);
+        end
+        test_movie = "frame_stream_test.avi";
+        movie_maker(1/config.frame_time,test_movie, 1,100);
+end
+
+
+
+
+
+
+
+
+
