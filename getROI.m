@@ -1,0 +1,24 @@
+function new_frame = getROI(frame_mat,ROI_flag,x_max,x_min,y_max,y_min)
+%%This function will return the point cloud data without the noisey parts
+%%that we know caused noise in the lab enviorment
+% Input:
+%    -frame mat - the matrix that holds the LIDAR point cloud data
+%    -ROI_flag - flag that indicates if ROI need to be chosen
+%    -x_max - maximum x cor of room
+%    -x_min - minimum x cor of room
+%    -y_max - maximum y cor of room
+%    -y_min - minimum y cor of room
+%           
+% Output:
+%   - new_frame - matrix that holds the points in the desired ROI
+
+if ROI_flag == 1
+    %%Get desired region of intrest
+    new_frame = frame_mat(frame_mat(:,1) < x_max & frame_mat(:,1) > x_min & frame_mat(:,2) < y_max & frame_mat(:,2)>y_min,:);
+    new_frame = new_frame(new_frame(:,1) ~= 0 &new_frame(:,2)~=0 &new_frame(:,3)~=0,:);%Ignore al NAN values
+else
+    new_frame = frame_mat;
+end
+
+
+
