@@ -10,6 +10,7 @@ Project Carried Out at: TAU Garden for Zoological Research
 
 ## 1 Abstract
 This project was conducted as part of a research which was carried out at the TAU Garden for Zoological Research. The scientific study of small flying creatures poses a significant challenge when it comes to monitoring their movement. To address this challenge, the project introduces a software system, using MATLAB, specifically designed to identify and track small flying objects.
+
 <img width="359" alt="image" src="https://github.com/Dankomis/FinalProject2023/assets/109519884/b6beb342-b13a-4b00-b1a3-3a9890e253ea">
 
 ## 2 Implementation
@@ -129,7 +130,9 @@ P. Morton, B. Douillard, J. Underwood. "An evaluation of dynamic object tracking
 "Livox Horizon User Manual", V1.0 2019.10
 ### Links:
 Kenshi Saho "Kalman Filter for Moving Object Tracking: Performance Analysis and Filter Design", https://www.intechopen.com/chapters/57673
+
 MATLAB™ – Tracking and Motion Estimation guide,  https://www.mathworks.com/help/vision/ug/using-kalman-filter-for-object-tracking.html?searchHighlight=use%20kalmanfilter&s_tid=srchtitle_use%2520kalmanfilter_2  
+
 Alex Becker, ""Kalman Filter from the Ground Up", online tutorial https://www.kalmanfilter.net/default.aspx
 
 
