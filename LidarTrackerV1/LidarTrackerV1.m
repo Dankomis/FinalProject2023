@@ -163,6 +163,7 @@ for i = 1:(frame_num-2)
                 obj_data = correct(kalman_filter,detectedLocation);
             end
             verif.estimations(i,1:3) = obj_data;
+            verif.estimations(i,4:6) = [kalman_filter.State(2),kalman_filter.State(5),kalman_filter.State(8)];
             verif.detections(i) = isObjectDetected;
             [obj.refAvg,obj.refVar] = get_reflectivityData(frame_mat,...
             obj_data(1),...
