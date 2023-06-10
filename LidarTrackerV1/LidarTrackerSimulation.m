@@ -24,6 +24,7 @@ simType = 4;%flag that indicates what kind of simulation will be executed
 
 switch simType
      case 1 %Simulate and Create frame detection stream
+        data_file = "C:\Users\DanK\Desktop\פרויקט גמר\Recordings\3.4.23\csv\1_ball_open_field.csv";
         %configure the tracking system
         config.kalman_filter = 4;
         config.meas = 2;
